@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -21,6 +21,15 @@ def health():
 @app.route("/backup/default", methods=["POST"])
 def backup_default():
     output = run_backup("/var/data/default")
+    return jsonify({"output": output})
+
+
+@app.route("/backup/custom", methods=["POST"])
+def backup_custom():
+    """Lets an operator back up a specific directory instead of the
+    default, for one-off maintenance tasks outside the normal schedule."""
+    target = request.json.get("path", "/var/data/default")
+    output = run_backup(target)
     return jsonify({"output": output})
 
 
